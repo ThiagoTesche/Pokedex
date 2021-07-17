@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokedéx</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="//db.onlinewebfonts.com/c/f4d1593471d222ddebd973210265762a?family=Pokemon" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <div class="main">
+        <img class="logo" src="clipart1534181.png" alt="">
+        <br/>
+        <input id="quantidade" style="width:100%;height: 40px;padding-left: 10px;" type="text" name="quantidade" placeholder="Insira a quantidade de pokemons...">
+        <div class="pokemon-boxes" id="pokemon-boxes">
+            
+        </div>
+        
+    </div>
+
+    <script>
+
+        var quantidade = document.getElementById('quantidade');
+        quantidade.addEventListener('keyup', ()=>{
+            pegaPokemons(quantidade.value);
+        });
+
+        pegaPokemons(3);
+        function pegaPokemons(quantidade, pesquisar){
+            fetch('https://pokeapi.co/api/v2/pokemon?limit='+ quantidade + pesquisar)
+            .then(response => response.json())
+            .then(allpokemon => {
+
+                var pokemons = [];
+                
+                allpokemon.results.map((val)=>{
+                
+                fetch(val.url)
+                    .then(response => response.json())
+                    .then(pokemonSingle => {
+                        pokemons.push({
+                            nome: val.name, 
+
+                            imagem: pokemonSingle.sprites.front_default,
+
+                            habilidade: pokemonSingle.abilities.map(item => item.ability.name),
+
+                            tipo: pokemonSingle.types.map(item => ' ' + item.type.name).toString(),
+
+                            id: pokemonSingle.id,
+
+                            order: val.order,
+
+                            stats01: pokemonSingle.stats[0].stat.name + ': ' + pokemonSingle.stats[0].base_stat,
+                            stats02: pokemonSingle.stats[1].stat.name + ': ' + pokemonSingle.stats[1].base_stat,
+                            stats03: pokemonSingle.stats[2].stat.name + ': ' + pokemonSingle.stats[2].base_stat,
+                            stats04: pokemonSingle.stats[3].stat.name + ': ' + pokemonSingle.stats[3].base_stat,
+                            stats05: pokemonSingle.stats[4].stat.name + ': ' + pokemonSingle.stats[4].base_stat,
+                            stats06: pokemonSingle.stats[5].stat.name + ': ' + pokemonSingle.stats[5].base_stat
+                            
+                        });
+                        console.log(pokemonSingle);
+                        //abilities[0].ability.name
+                        
+                        if(pokemons.length == quantidade){
+                            
+                            var pokemonBoxes = document.querySelector('.pokemon-boxes');
+                            pokemonBoxes.innerHTML = "";
+                            
+                            pokemons.map(function(val){
+                                pokemonBoxes.innerHTML += `
+                                <div class="pokemon-box">
+                                    <div class="imagem-box">
+                                        <img src="`+val.imagem+`" alt="">
+                                    </div>
+                                    <p class="id">Nº `+val.id+`</p>
+                                    <p class="name">Nome: `+val.nome+`</p>
+                                    <p> Habilidades: `+val.habilidade+`</p>
+                                    <p><span class="type">Tipo:</span>`+val.tipo+`</p>
+                                    <div class="poderes" id="poderes">
+                                        <p> `+val.stats01+`</p>
+                                        <p> `+val.stats02+`</p>
+                                        <p> `+val.stats03+`</p>
+                                        <p> `+val.stats04+`</p>
+                                        <p> `+val.stats05+`</p>
+                                        <p> `+val.stats06+`</p>
+                                        
+                                    </div>    
+                                    <h4 class="capturado">Capturado</h4>
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>`
+
+                            
+                                
+                                
+                            });
+
+                        }
+                    });
+                    
+                });
+
+            });
+
+        }
+        
+    </script>
+</body>
+</html>
